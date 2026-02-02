@@ -30,4 +30,4 @@ jobs:
         run: echo "GitHub Actions working!"
 
       - name: List Files Step
-        run: ls -R
+        run: ls
