@@ -31,6 +31,3 @@ jobs:
 
       - name: List Files Step
         run: ls
-        
-      - name: Show the file changes
-        run: cat
