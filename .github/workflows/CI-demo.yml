@@ -28,6 +28,7 @@ jobs:
       # Runs a single command using the runners shell
       - name: Print Status
         run: echo "GitHub Actions working!"
-
+        
+      # List all files resides in the current directory
       - name: List Files Step
         run: ls
