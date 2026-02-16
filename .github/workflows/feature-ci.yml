@@ -1,0 +1,35 @@
+name: Feature Branch CI
+
+on:
+  push:
+    branches:
+      - 'feature/**'      # Triggers only on branches starting with feature/
+    paths:
+      - 'app/**'          # Runs only when files in app/ change
+    paths-ignore:
+      - 'docs/**'         # Explicitly skip docs
+      - '**.md'           # Explicitly skip markdown files
+
+env:
+  NODE_ENV: ci            # Sets global environment variable
+
+jobs:
+  feature-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Tests
+        run: npm test
+
+      - name: Verify Environment
+        run: echo "Current NODE_ENV is $NODE_ENV"
