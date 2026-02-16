@@ -1,50 +1,46 @@
 name: Deploy Application
 
-on:
-  workflow_dispatch: # Manual trigger as per requirements
+# Trigger: Manual only (as requested)
+on: 
+  workflow_dispatch:
 
 jobs:
-  build:
+  # Job 1: Build the artifact (Runs on GitHub's cloud runners)
+  build_artifact:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Create Dummy Artifact
-        run: |
-          echo "Building application..." > build-output.txt
-          echo "v1.0.${{ github.run_number }}" >> build-output.txt
+        run: echo "This is the application binary version 1.0" > app-package.txt
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-build
-          path: build-output.txt
+          name: deployment-package
+          path: app-package.txt
 
-  deploy:
-    needs: build
-    runs-on: [self-hosted, aws-deployment] # Using your specific AWS runner label
+  # Job 2: Deploy script (Runs on YOUR self-hosted runner)
+  deploy_to_server:
+    needs: build_artifact  # Waits for the build job to finish
+    runs-on: self-hosted   # <--- IMPORTANT: Targets your local machine/VM
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Download Build Artifact
+      - name: Download Artifact
         uses: actions/download-artifact@v4
         with:
-          name: app-build
-          path: ./deployment
+          name: deployment-package
+          path: ./temp_deploy_folder
 
-      - name: Prepare Deployment Script
+      - name: Create and Run Deploy Script
         run: |
+          # Create the deploy.sh script dynamically
+          echo '#!/bin/bash' > deploy.sh
+          echo 'echo "Starting Deployment..."' >> deploy.sh
+          echo 'echo "Deploying artifact found in ./temp_deploy_folder"' >> deploy.sh
+          echo 'cat ./temp_deploy_folder/app-package.txt' >> deploy.sh
+          echo 'echo "Deployment Successful!"' >> deploy.sh
+          
+          # Make it executable and run it
           chmod +x deploy.sh
-          # If deploy.sh doesn't exist in your repo, this creates a basic one
-          if [ ! -f deploy.sh ]; then
-            echo "#!/bin/bash" > deploy.sh
-            echo "echo 'Starting deployment on AWS...'" >> deploy.sh
-            echo "cat ./deployment/build-output.txt" >> deploy.sh
-            echo "echo 'Deployment Complete!'" >> deploy.sh
-            chmod +x deploy.sh
-          fi
-
-      - name: Execute Deployment
-        run: ./deploy.sh
+          ./deploy.sh
