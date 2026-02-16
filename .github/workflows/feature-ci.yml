@@ -3,15 +3,14 @@ name: Feature Branch CI
 on:
   push:
     branches:
-      - 'feature/**'      # Triggers only on branches starting with feature/
+      - 'feature/**'
     paths:
-      - 'app/**'          # Runs only when files in app/ change
-    paths-ignore:
-      - 'docs/**'         # Explicitly skip docs
-      - '**.md'           # Explicitly skip markdown files
+      - 'app/**'        # Runs when app files change
+      - '!docs/**'      # Explicitly ignore docs (if inside app/)
+      - '!**.md'        # Explicitly ignore markdown files
 
 env:
-  NODE_ENV: ci            # Sets global environment variable
+  NODE_ENV: ci
 
 jobs:
   feature-test:
