@@ -1,0 +1,30 @@
+name: Reusable CI (Apache)
+
+on:
+  workflow_call:
+    inputs:
+      target-os:
+        required: false
+        type: string
+        default: 'ubuntu-latest'
+        description: "The OS environment to run on"
+
+jobs:
+  install-dependency:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout Code
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Step 2: Install Dependency (Apache)
+      - name: Install Apache Web Server
+        run: |
+          echo "Updating package index..."
+          sudo apt-get update
+          
+          echo "Installing Apache2..."
+          sudo apt-get install -y apache2
+          
+          echo "Verifying installation..."
+          apache2 -v
