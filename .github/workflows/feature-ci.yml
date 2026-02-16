@@ -3,14 +3,14 @@ name: Feature Branch CI
 on:
   push:
     branches:
-      - 'feature/**'        # Runs on branches like feature/login, feature/update
+      - 'feature/**'       # 1. Runs on branches starting with feature/
     paths:
-      - 'app/**'            # Runs if files in 'app' change
-      - '!**.md'            # Skips if ONLY .md files change
-      - '!docs/**'          # Skips if ONLY docs folder changes
+      - 'app/**'           # 2. Runs when files under app/ change
+      - '!**.md'           # 3. Skips when ONLY .md files change (globally)
+      - '!docs/**'         # 4. Skips when ONLY docs/ files change
 
 env:
-  NODE_ENV: ci              # Sets global environment variable
+  NODE_ENV: ci             # 5. Global environment variable
 
 jobs:
   build-and-test:
@@ -22,10 +22,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 'lts/*'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci        # 6. Clean install (requires package-lock.json)
 
       - name: Run tests
-        run: npm test       # This runs "node app/index.js"
+        run: npm test      # 7. Runs the test script
+      
+      - name: Debug Env
+        run: echo "NODE_ENV is $NODE_ENV" # Verification step
