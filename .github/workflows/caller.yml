@@ -1,0 +1,11 @@
+name: Caller Workflow (Main)
+
+on:
+  workflow_dispatch: # Allows manual trigger for the assignment screenshot
+
+jobs:
+  call-apache-workflow:
+    # IMPORTANT: This path must match exactly where you saved the file above
+    uses: ./.github/workflows/reusable-ci.yml
+    with:
+      target-os: 'ubuntu-latest'
