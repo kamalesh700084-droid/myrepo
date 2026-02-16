@@ -1,0 +1,41 @@
+name: Trigger Exploration Assignment
+
+on:
+  # Trigger 1: Runs automatically on code push to main
+  push:
+    branches:
+      - main
+  
+  # Trigger 2: Runs manually via button click
+  workflow_dispatch:
+
+  # Trigger 3: Runs on a schedule (Every day at midnight UTC)
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  report-trigger-source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Identify and Log Trigger
+        run: |
+          echo "=========================================="
+          echo "   GITHUB ACTIONS TRIGGER REPORT"
+          echo "=========================================="
+          echo "Workflow initiated by: ${{ github.event_name }}"
+          echo "Initiated by user:     ${{ github.actor }}"
+          echo "Branch/Ref:            ${{ github.ref }}"
+          echo "=========================================="
+
+      - name: Conditional Logic Output
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "STATUS: Manual Override. User explicitly requested this run."
+          elif [ "${{ github.event_name }}" == "schedule" ]; then
+            echo "STATUS: Automated Run. Executing scheduled maintenance."
+          elif [ "${{ github.event_name }}" == "push" ]; then
+            echo "STATUS: CI Check. Validating new code updates."
+          fi
